@@ -29,8 +29,8 @@ end
 
 function worldIndex(world, index)
     if index == 0 then
-        toroidIndex = 128
-    elseif index == 129 then
+        toroidIndex = 127
+    elseif index == 128 then
         toroidIndex = 1
     else
         toroidIndex = index
@@ -106,6 +106,7 @@ end
 function restartSim()
     cls()
     mode = "run"
+    newColor = randomColor(0)
     iterationnumber = 0
     newworld = generateHomogeniousList(128, 0)
     --{"random even", "random high", "random low", "single middle", "single random"}
@@ -292,7 +293,7 @@ function _update()
             iterationnumber += 1
             local x = 1
             newworld = {}            
-            while x <= 128 do
+            while x <= 127 do
                 local v0 = worldIndex(oldworld, x - 1)
                 local v1 = worldIndex(oldworld, x)
                 local v2 = worldIndex(oldworld, x + 1)            
@@ -322,17 +323,39 @@ function _update()
 end
 
 
+function randomColor(excludedColor)
+    output = flr(rnd(16))
+
+    while output == excludedColor do
+        output = flr(rnd(16))
+    end
+
+    return output
+end
+
+
 function _draw()
     --print("draw")
     if mode == "run" then        
         local xpos = 0
 
-        for element in all(newworld) do                
-            pset(xpos, iterationnumber, (iterationnumber % 16) * element)
-            xpos += 1
+        --colorOptions = {"random line", "random noise", "solid"}
+        if iterationnumber < maxiterationnumber then
+            if colorsMode == "random line" then
+                newColor = randomColor(0)
+            end
+
+            for element in all(newworld) do
+                if colorsMode == "random noise" then
+                    newColor = randomColor(0)
+                end            
+
+                pset(xpos, iterationnumber, newColor * element)
+                xpos += 1
+            end
+            
+            oldworld = copyWorld(newworld)
         end
-        
-        oldworld = copyWorld(newworld)
     elseif mode == "config" then
         local left = btnp(0)
         local right = btnp(1)
