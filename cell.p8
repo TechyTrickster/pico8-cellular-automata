@@ -304,7 +304,20 @@ function _update()
         else
             --stop()
         end
-    elseif mode == "config" then        
+    elseif mode == "config" then --interface code
+        if btnp(2) then --up pressed
+            cursorPosition -= 1 
+        elseif btnp(3) then --down pressed
+            cursorPosition += 1
+        end
+
+        if cursorPosition > #configBuffer then --wrap around
+            cursorPosition = 1
+        elseif cursorPosition == 0 then
+            cursorPosition = #configBuffer
+        else
+            cursorPosition = cursorPosition
+        end     
     end
 end
 
@@ -320,26 +333,12 @@ function _draw()
         end
         
         oldworld = copyWorld(newworld)
-    elseif mode == "config" then        
-        cls() --should be changed to event based processing
-        color(6)
+    elseif mode == "config" then
         local left = btnp(0)
         local right = btnp(1)
-
-        if btnp(2) then --up pressed
-            cursorPosition -= 1 
-        elseif btnp(3) then --down pressed
-            cursorPosition += 1
-        end
-
-        if cursorPosition > #configBuffer then --wrap around
-            cursorPosition = 1
-        elseif cursorPosition == 0 then
-            cursorPosition = #configBuffer
-        else
-            cursorPosition = cursorPosition
-        end
-        
+        cls() --should be changed to event based processing
+        color(6)
+                
         for index, element in pairs(configBuffer) do
             local isSelected = (index == cursorPosition)
             updateConfigElement(element, left, right, isSelected)
